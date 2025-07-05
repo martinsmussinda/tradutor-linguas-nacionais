@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contribuições - Línguas Nacionais</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #007b5e;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    table {
+      border-collapse: collapse;
+      width: 95%;
+      margin: 2rem auto;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.75rem;
+      text-align: left;
+    }
+    th {
+      background-color: #007b5e;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      font-size: 1.2rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Contribuições Recebidas</h1>
+  <p>Veja as frases e traduções enviadas pela comunidade</p>
+</header>
+
+<div class="loading" id="loading">Carregando dados...</div>
+
+<table id="dataTable" style="display:none;">
+  <thead>
+    <tr>
+      <th>Idioma</th>
+      <th>Português</th>
+      <th>Tradução</th>
+      <th>Pronúncia</th>
+      <th>Contexto</th>
+    </tr>
+  </thead>
+  <tbody id="dataBody"></tbody>
+</table>
+
+<script>
+  const sheetURL = "https://api.sheety.co/e8f4467a43b6d36d1026404455b09f05/contribuiçõesLinguísticas/folha1";
+
+  async function carregarDados() {
+    try {
+      const response = await fetch(sheetURL);
+      const data = await response.json();
+
+      const entries = data.feed.entry || [];
+      const tbody = document.getElementById("dataBody");
+
+      entries.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry['gsx$idioma']?.$t || ""}</td>
+          <td>${entry['gsx$fraseemportuguês']?.$t || ""}</td>
+          <td>${entry['gsx$tradução']?.$t || ""}</td>
+          <td>${entry['gsx$pronúncia']?.$t || ""}</td>
+          <td>${entry['gsx$contextoouobservações']?.$t || ""}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("dataTable").style.display = "table";
+    } catch (error) {
+      document.getElementById("loading").textContent = "Erro ao carregar os dados.";
+    }
+  }
+
+  carregarDados();
+</script>
+
+</body>
+</html>

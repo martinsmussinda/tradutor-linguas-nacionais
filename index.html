@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contribua com o Tradutor de Línguas Nacionais</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background-color: #007b5e;
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    main {
+      max-width: 700px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h2 {
+      color: #007b5e;
+    }
+    label {
+      display: block;
+      margin-top: 1.2rem;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.8rem 2rem;
+      background-color: #007b5e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005f47;
+    }
+    .message {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 5px;
+      display: none;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Contribua com o Tradutor de Línguas Nacionais</h1>
+  <p>Ajude-nos a preservar e digitalizar as línguas nacionais de Angola</p>
+</header>
+
+<main>
+  <h2>Enviar Tradução</h2>
+  <form id="contributionForm">
+    <label for="idioma">Idioma Nacional</label>
+    <select id="idioma" required>
+      <option value="">Selecione</option>
+      <option value="Umbundu">Umbundu</option>
+      <option value="Kimbundu">Kimbundu</option>
+      <option value="Kikongo">Kikongo</option>
+      <option value="Tchokwe">Tchokwe</option>
+      <option value="Outros">Outro</option>
+    </select>
+
+    <label for="frasePt">Frase em Português</label>
+    <input type="text" id="frasePt" placeholder="Ex: Bom dia" required />
+
+    <label for="traducao">Tradução</label>
+    <input type="text" id="traducao" placeholder="Ex: Ukanhoka" required />
+
+    <label for="pronuncia">Pronúncia (opcional)</label>
+    <input type="text" id="pronuncia" placeholder="Ex: u-kan-rô-ka" />
+
+    <label for="contexto">Contexto ou Observações</label>
+    <textarea id="contexto" rows="3" placeholder="Ex: Usado ao cumprimentar pela manhã"></textarea>
+
+    <button type="submit">Enviar Contribuição</button>
+    <div id="msg" class="message"></div>
+  </form>
+</main>
+
+<script>
+  const endpoint = "https://script.google.com/macros/s/AKfycby1aYcOOCvqQ-3rcWO4T-46HueWe0ZhoUVdsful9WpzsnpyilCFsRAfoDSItRnTBgpqGA/exec";
+
+  document.getElementById("contributionForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const idioma = document.getElementById("idioma").value;
+    const frasePt = document.getElementById("frasePt").value.trim();
+    const traducao = document.getElementById("traducao").value.trim();
+    const pronuncia = document.getElementById("pronuncia").value.trim();
+    const contexto = document.getElementById("contexto").value.trim();
+    const msg = document.getElementById("msg");
+
+    if (!idioma || !frasePt || !traducao) {
+      msg.style.display = "block";
+      msg.className = "message error";
+      msg.textContent = "Preencha todos os campos obrigatórios.";
+      return;
+    }
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: JSON.stringify({ idioma, frasePt, traducao, pronuncia, contexto }),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      const result = await response.json();
+
+      if (result.status === "sucesso") {
+        msg.style.display = "block";
+        msg.className = "message success";
+        msg.textContent = "Obrigado pela sua contribuição!";
+        this.reset();
+      } else {
+        throw new Error("Erro ao enviar.");
+      }
+    } catch (err) {
+      msg.style.display = "block";
+      msg.className = "message error";
+      msg.textContent = "Erro ao enviar contribuição. Tente novamente.";
+    }
+  });
+</script>
+
+</body>
+</html>
