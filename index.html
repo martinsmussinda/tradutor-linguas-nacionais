@@ -108,8 +108,9 @@
   </form>
 </main>
 
+<!-- Troca feita apenas no `endpoint` do JavaScript -->
 <script>
-  const endpoint = "https://script.google.com/macros/s/AKfycbzmF5qnI1BesPK42SwMi9O4cnYpUE9cA079mgpA_PwtinZ9-JaCrQDiXPKpY6NLlISO2Q/exec";
+  const endpoint = "https://script.google.com/macros/s/AKfycbyFG5aBvmK0XrdnGv1jyD-U74KRD4l58a-_UqP_wgb_2izTM6_o7S1KvrP234tAjSHzOw/exec";
 
   document.getElementById("contributionForm").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -128,13 +129,10 @@
       return;
     }
 
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        body: JSON.stringify({ idioma, frasePt, traducao, pronuncia, contexto }),
-        headers: { "Content-Type": "application/json" }
-      });
+    const url = `${endpoint}?idioma=${encodeURIComponent(idioma)}&frasePt=${encodeURIComponent(frasePt)}&traducao=${encodeURIComponent(traducao)}&pronuncia=${encodeURIComponent(pronuncia)}&contexto=${encodeURIComponent(contexto)}`;
 
+    try {
+      const response = await fetch(url);
       const result = await response.json();
 
       if (result.status === "sucesso") {
@@ -152,6 +150,5 @@
     }
   });
 </script>
-
 </body>
 </html>
