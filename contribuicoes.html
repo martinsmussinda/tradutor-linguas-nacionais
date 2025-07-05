@@ -5,43 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contribuições - Línguas Nacionais</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #007b5e;
-      color: white;
-      padding: 2rem;
-      text-align: center;
-    }
-    table {
-      border-collapse: collapse;
-      width: 95%;
-      margin: 2rem auto;
-      background-color: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 0.75rem;
-      text-align: left;
-    }
-    th {
-      background-color: #007b5e;
-      color: white;
-    }
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    .loading {
-      text-align: center;
-      padding: 2rem;
-      font-size: 1.2rem;
-      color: #555;
-    }
+    body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+    header { background-color: #007b5e; color: white; padding: 2rem; text-align: center; }
+    table { border-collapse: collapse; width: 95%; margin: 2rem auto; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    th, td { border: 1px solid #ddd; padding: 0.75rem; text-align: left; }
+    th { background-color: #007b5e; color: white; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+    .loading { text-align: center; padding: 2rem; font-size: 1.2rem; color: #555; }
   </style>
 </head>
 <body>
@@ -51,7 +21,7 @@
   <p>Veja as frases e traduções enviadas pela comunidade</p>
 </header>
 
-<div class="loading" id="loading">Carregando dados...</div>
+<div class="loading" id="loading">A carregar dados...</div>
 
 <table id="dataTable" style="display:none;">
   <thead>
@@ -67,31 +37,41 @@
 </table>
 
 <script>
-  const scriptURL = "https://script.google.com/macros/s/AKfycbyFG5aBvmK0XrdnGv1jyD-U74KRD4l58a-_UqP_wgb_2izTM6_o7S1KvrP234tAjSHzOw/exec?ver=dados";
+  // URL do seu script com a 'pergunta' para VISUALIZAR
+  const scriptURL = "https://script.google.com/macros/s/AKfycbyFG5aBvmK0XrdnGv1jyD-U74KRD4l58a-_UqP_wgb_2izTM6_o7S1KvrP234tAjSHzOw/exec?action=visualizar";
 
   async function carregarDados() {
+    const loadingDiv = document.getElementById("loading");
     try {
       const response = await fetch(scriptURL);
       const data = await response.json();
 
+      // Verifica se a resposta foi um erro do script
+      if(data.status === 'erro') {
+          throw new Error(data.mensagem);
+      }
+
       const tbody = document.getElementById("dataBody");
+      tbody.innerHTML = ''; // Limpa a tabela antes de adicionar novos dados
 
       data.forEach(entry => {
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${entry.idioma}</td>
-          <td>${entry.frasePt}</td>
-          <td>${entry.traducao}</td>
-          <td>${entry.pronuncia}</td>
-          <td>${entry.contexto}</td>
+          <td>${entry.idioma || ''}</td>
+          <td>${entry.frasePt || ''}</td>
+          <td>${entry.traducao || ''}</td>
+          <td>${entry.pronuncia || ''}</td>
+          <td>${entry.contexto || ''}</td>
         `;
         tbody.appendChild(row);
       });
 
-      document.getElementById("loading").style.display = "none";
+      loadingDiv.style.display = "none";
       document.getElementById("dataTable").style.display = "table";
+
     } catch (error) {
-      document.getElementById("loading").textContent = "Erro ao carregar os dados.";
+      loadingDiv.textContent = "Erro ao carregar os dados: " + error.message;
+      loadingDiv.style.color = "red";
     }
   }
 
