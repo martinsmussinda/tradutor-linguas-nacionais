@@ -56,16 +56,14 @@
 </main>
 
 <script>
-  // URL do seu script para ENVIAR dados
-  const endpoint = "https://script.google.com/macros/s/AKfycbxgRL4uZ33ZnaNxlJWaf0uKLxZ1Hx6CYuHU3m-Q3NWySblObR1I-s8pu0f_RV9mvcf1Mg/exec";
+  const endpoint = "https://script.google.com/macros/s/AKfycbxgRL4uZ33ZnaNxlJWaf0uKLxZ1Hx6CYuHU3m-Q3NWySblObR1I-s8pu0f_RV9mvcf1Mg/exec"; // O URL base, sem parâmetros
 
   document.getElementById("contributionForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-
     const form = this;
     const submitButton = form.querySelector('button[type="submit"]');
     const msg = document.getElementById("msg");
-    
+
     const dados = {
         idioma: document.getElementById("idioma").value,
         frasePt: document.getElementById("frasePt").value.trim(),
@@ -84,10 +82,19 @@
     submitButton.disabled = true;
     submitButton.textContent = "A enviar...";
 
-    const url = `${endpoint}?idioma=${encodeURIComponent(dados.idioma)}&frasePt=${encodeURIComponent(dados.frasePt)}&traducao=${encodeURIComponent(dados.traducao)}&pronuncia=${encodeURIComponent(dados.pronuncia)}&contexto=${encodeURIComponent(dados.contexto)}`;
-
     try {
-      const response = await fetch(url);
+      // ESTE É O NOVO FETCH USANDO POST
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        mode: 'cors', // Adicionado para garantir a política CORS
+        cache: 'no-cache',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // O corpo da requisição com os dados
+        body: JSON.stringify(dados) 
+      });
+
       const result = await response.json();
 
       if (result.status === "sucesso") {
@@ -99,7 +106,8 @@
       }
     } catch (err) {
       msg.className = "message error";
-      msg.textContent = "Erro ao enviar a contribuição. Tente novamente.";
+      // A mensagem de erro agora é mais específica.
+      msg.textContent = "Erro ao enviar: " + err.message;
     } finally {
       msg.style.display = "block";
       submitButton.disabled = false;
